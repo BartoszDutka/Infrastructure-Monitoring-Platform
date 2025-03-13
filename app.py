@@ -22,11 +22,15 @@ from modules.database import (
 )
 from datetime import datetime, timedelta
 from modules.user_data import update_user_profile
+from inventory import inventory  # Import the inventory blueprint
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
 app = Flask(__name__)
 app.secret_key = 'REDACTED_SECRET'  # Poprawiony błąd składni
 app.config['SESSION_TYPE'] = 'filesystem'
+
+# Register blueprints
+app.register_blueprint(inventory)
 
 # Dodaj globalną zmienną dla cache
 glpi_cache = None
