@@ -88,7 +88,7 @@ print(f"Status: {PDF_STATUS_MESSAGE}")
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
 app = Flask(__name__)
-app.secret_key = 'REDACTED_SECRET'  # Poprawiony błąd składni
+app.secret_key = os.environ["FLASK_SECRET_KEY"]
 app.config['SESSION_TYPE'] = 'filesystem'
 app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(days=7)  # Sesja będzie ważna przez 7 dni
 
@@ -101,7 +101,7 @@ glpi_cache = None
 
 # Dodaj nowe stałe na górze pliku
 ULTRAVNC_PATH = r"C:\igichp\UltraVNC_Viewer\vncviewer_1.2.0.6.exe"
-VNC_PASSWORD = "REDACTED_SECRET"
+VNC_PASSWORD = os.environ.get("VNC_PASSWORD", "")
 
 # Dodaj konfigurację dla uploadów
 UPLOAD_FOLDER = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'static', 'avatars')
@@ -736,6 +736,9 @@ def connect_vnc():
         hostname = data.get('hostname')
         if not hostname:
             return jsonify({"status": "error", "message": "No hostname provided"}), 400
+
+        if not VNC_PASSWORD:
+            return jsonify({"error": "VNC is not configured"}), 503
 
         # Przygotuj komendę VNC używając nazwy hosta bezpośrednio
         vnc_command = [
